@@ -1,0 +1,27 @@
+fastapi
+uvicorn[standard]  # Installs uvloop automatically
+jinja2
+httpx
+pydantic-settings
+websockets
+orjson             # OPTIMIZATION: High-performance JSON parser
+pytest
+pytest-asyncio
+redis
+qdrant-client
+sentence-transformers
+torch
+peft
+transformers
+trl
+bitsandbytes
+scipy
+fastembed       # OPTIMIZATION: Rust-based, blazingly fast embeddings
+orjson          # OPTIMIZATION: Fast JSON serialization
+redis           # Async Redis
+qdrant-client   # Vector DB Client
+python-jose[cryptography]
+sqlalchemy[asyncio]
+asyncpg
+alembic
+passlib[bcrypt]

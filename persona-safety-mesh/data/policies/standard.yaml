@@ -1,0 +1,2 @@
+allowed_topics: ['fiction', 'romance']
+blocked_topics: ['real_violence', 'illegal_acts']

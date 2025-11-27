@@ -1,0 +1,7 @@
+fastapi
+uvicorn
+torch
+transformers
+opa-python-client
+pydantic
+scikit-learn

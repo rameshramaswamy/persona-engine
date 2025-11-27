@@ -1,0 +1,67 @@
+version: "3.8"
+
+services:
+  # EDGE LAYER
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./edge/nginx/nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - core-api
+
+  # AUTH LAYER (Mocking Keycloak for simplicity, or use real image)
+  # keycloak:
+  #   image: quay.io/keycloak/keycloak:latest
+  #   command: start-dev
+
+  # APP LAYER
+  core-api:
+    build:
+      context: ../../
+      dockerfile: deploy/Dockerfile
+    deploy:
+      replicas: 3 # Scale out for concurrency
+      resources:
+        limits:
+          cpus: "2.0"
+          memory: "2G"
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://user:pass@postgres/persona
+      - REDIS_HOST=redis
+    depends_on:
+      - postgres
+      - redis
+
+  # DATA LAYER
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pass
+      POSTGRES_DB: persona
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:alpine
+    command: redis-server --save 60 1 --loglevel warning
+
+  # INTELLIGENCE LAYER (GPU)
+  vllm:
+    image: vllm/vllm-openai:latest
+    runtime: nvidia
+    environment:
+      - HUGGING_FACE_HUB_TOKEN=${HF_TOKEN}
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+volumes:
+  pg_data:
